@@ -1,15 +1,19 @@
 package jp.t2v.lab.play2.stackc
 
 import play.api.mvc._
+
 import scala.collection.concurrent.TrieMap
-import scala.concurrent.{Future, ExecutionContext}
+import scala.concurrent.{ExecutionContext, Future}
+import scala.util.control.{ControlThrowable, NonFatal}
 import scala.util.{Failure, Success}
-import scala.util.control.{NonFatal, ControlThrowable}
 
 trait StackableController {
-    self: Controller =>
+  self: BaseController =>
 
-  final class StackActionBuilder(params: Attribute[_]*) extends ActionBuilder[RequestWithAttributes] {
+  final class StackActionBuilder[B](val parser: BodyParser[B], params: Attribute[_]*) extends ActionBuilder[RequestWithAttributes, B] {
+
+    def executionContext: ExecutionContext = defaultExecutionContext
+
     def invokeBlock[A](req: Request[A], block: (RequestWithAttributes[A]) => Future[Result]): Future[Result] = {
       val request = new RequestWithAttributes(req, new TrieMap[RequestAttributeKey[_], Any] ++= params.map(_.toTuple))
       try {
@@ -21,13 +25,17 @@ trait StackableController {
     }
   }
 
-  final def AsyncStack[A](p: BodyParser[A], params: Attribute[_]*)(f: RequestWithAttributes[A] => Future[Result]): Action[A] = new StackActionBuilder(params: _*).async(p)(f)
-  final def AsyncStack(params: Attribute[_]*)(f: RequestWithAttributes[AnyContent] => Future[Result]): Action[AnyContent] = new StackActionBuilder(params: _*).async(f)
-  final def AsyncStack(f: RequestWithAttributes[AnyContent] => Future[Result]): Action[AnyContent] = new StackActionBuilder().async(f)
+  final def AsyncStack[A](p: BodyParser[A], params: Attribute[_]*)(f: RequestWithAttributes[A] => Future[Result]): Action[A] = new StackActionBuilder(p, params: _*).async(p)(f)
 
-  final def StackAction[A](p: BodyParser[A], params: Attribute[_]*)(f: RequestWithAttributes[A] => Result): Action[A] = new StackActionBuilder(params: _*).apply(p)(f)
-  final def StackAction(params: Attribute[_]*)(f: RequestWithAttributes[AnyContent] => Result): Action[AnyContent] = new StackActionBuilder(params: _*).apply(f)
-  final def StackAction(f: RequestWithAttributes[AnyContent] => Result): Action[AnyContent] = new StackActionBuilder().apply(f)
+  final def AsyncStack(params: Attribute[_]*)(f: RequestWithAttributes[AnyContent] => Future[Result]): Action[AnyContent] = new StackActionBuilder(parse.default, params: _*).async(f)
+
+  final def AsyncStack(f: RequestWithAttributes[AnyContent] => Future[Result]): Action[AnyContent] = new StackActionBuilder(parse.default).async(f)
+
+  final def StackAction[A](p: BodyParser[A], params: Attribute[_]*)(f: RequestWithAttributes[A] => Result): Action[A] = new StackActionBuilder(p, params: _*).apply(p)(f)
+
+  final def StackAction(params: Attribute[_]*)(f: RequestWithAttributes[AnyContent] => Result): Action[AnyContent] = new StackActionBuilder(parse.default, params: _*).apply(f)
+
+  final def StackAction(f: RequestWithAttributes[AnyContent] => Result): Action[AnyContent] = new StackActionBuilder(parse.default).apply(f)
 
   def proceed[A](request: RequestWithAttributes[A])(f: RequestWithAttributes[A] => Future[Result]): Future[Result] = f(request)
 
@@ -45,7 +53,7 @@ trait StackableController {
   protected object ExecutionContextKey extends RequestAttributeKey[ExecutionContext]
 
   protected def StackActionExecutionContext(implicit req: RequestWithAttributes[_]): ExecutionContext =
-    req.get(ExecutionContextKey).getOrElse(play.api.libs.concurrent.Execution.defaultContext)
+    req.get(ExecutionContextKey).getOrElse(defaultExecutionContext)
 
 }
 
@@ -75,4 +83,3 @@ class RequestWithAttributes[A](underlying: Request[A], attributes: TrieMap[Reque
   }
 
 }
-
