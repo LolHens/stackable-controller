@@ -64,7 +64,7 @@ lazy val sample = project
       guice,
       specs2 % "test",
       "com.typesafe.play" %% "play" % play.core.PlayVersion.current,
-      "com.h2database" % "h2" % "1.4.196",
+      "com.h2database" % "h2" % "1.4.200",
       "org.scalikejdbc" %% "scalikejdbc" % "3.5.0",
       "org.scalikejdbc" %% "scalikejdbc-config" % "3.5.0",
       "org.scalikejdbc" %% "scalikejdbc-play-initializer" % "2.8.0-scalikejdbc-3.5",
