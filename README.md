@@ -6,6 +6,19 @@
 This module offers Action Composition Utilities to Play2.1, 2.2, 2.3, 2.4, 2.5 applications
 
 
+## How to use
+
+Add a dependency declaration into your Build.scala or build.sbt file:
+
+```scala
+libraryDependencies += "de.lolhens" %% "stackable-controller" % "0.7.1"
+```
+
+- for Play2.2.x, use 0.3.0
+- for Play2.3.x, use 0.4.1
+- for Play2.4.x, use 0.5.1
+
+
 ## Target
 
 
@@ -167,17 +180,6 @@ As an alternative, this module offers Composable Action composition using the po
     }
     ```
 
-## How to use
-
-Add a dependency declaration into your Build.scala or build.sbt file:
-
-```scala
-libraryDependencies += "de.lolhens" %% "stackable-controller" % "0.7.0"
-```
-
-- for Play2.2.x, use 0.3.0
-- for Play2.3.x, use 0.4.1
-- for Play2.4.x, use 0.5.1
 
 ## ExecutionContext
 
