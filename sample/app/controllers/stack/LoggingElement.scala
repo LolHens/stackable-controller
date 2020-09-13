@@ -8,8 +8,8 @@ trait LoggingElement extends StackableController {
   self: BaseController =>
 
   override def cleanupOnSucceeded[A](req: RequestWithAttributes[A], res: Option[Result]): Unit = {
-    res.map { result =>
-      Logger.debug(Array(result.header.status, req.toString(), req.body).mkString("\t"))
+    res.foreach { result =>
+      Logger(getClass).debug(Array(result.header.status, req.toString(), req.body).mkString("\t"))
     }
     super.cleanupOnSucceeded(req, res)
   }

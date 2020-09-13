@@ -1,73 +1,52 @@
-inThisBuild(Seq(
-  organization := "jp.t2v",
+lazy val commonSettings: Seq[Setting[_]] = Seq(
+  organization := "de.lolhens",
   version := "0.7.0-SNAPSHOT",
-  scalaVersion := "2.12.3",
-  crossScalaVersions := Seq("2.12.3", "2.11.11"),
-  scalacOptions ++= Seq("-unchecked")
-))
 
-resolvers ++= Seq(
-  "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
-  "sonatype releases" at "http://oss.sonatype.org/content/repositories/releases"
+  scalaVersion := "2.13.3",
+  crossScalaVersions := Seq("2.12.12", scalaVersion.value)
 )
 
-lazy val core = (project in file("core"))
+/*resolvers ++= Seq(
+  "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
+  "sonatype releases" at "http://oss.sonatype.org/content/repositories/releases"
+)*/
+
+lazy val core = project
+  .settings(commonSettings)
   .settings(
     name := "stackable-controller",
-    publishTo := publishDestination(version.value),
-    publishMavenStyle := true,
+
+    scalacOptions ++= Seq("-unchecked"),
+
     libraryDependencies ++= Seq(
       "com.typesafe.play" %% "play" % play.core.PlayVersion.current % "provided",
-      guice
-    ),
-    publishArtifact in Test := false,
-    pomIncludeRepository := (_ => false),
-    pomExtra := pom
+
+    )
   )
 
-lazy val sample = (project in file("sample"))
+lazy val sample = project
   .enablePlugins(play.sbt.PlayScala)
+  .settings(commonSettings)
   .settings(
+    publish / skip := true,
+
     libraryDependencies ++= Seq(
-      play.sbt.Play.autoImport.jdbc,
-      play.sbt.Play.autoImport.specs2 % "test",
+      jdbc,
+      guice,
+      specs2 % "test",
       "com.typesafe.play" %% "play" % play.core.PlayVersion.current,
-      "com.h2database" % "h2" % "1.4.196",
-      "org.scalikejdbc" %% "scalikejdbc" % "3.0.2",
-      "org.scalikejdbc" %% "scalikejdbc-config" % "3.0.2",
-      "org.scalikejdbc" %% "scalikejdbc-play-initializer" % "2.6.0-scalikejdbc-3.0",
+      //"com.h2database" % "h2" % "1.4.196",
+      "org.scalikejdbc" %% "scalikejdbc" % "3.5.0",
+      "org.scalikejdbc" %% "scalikejdbc-config" % "3.5.0",
+      "org.scalikejdbc" %% "scalikejdbc-play-initializer" % "2.8.0-scalikejdbc-3.5",
       "org.slf4j" % "slf4j-simple" % "[1.7,)"
     )
   )
   .dependsOn(core)
 
-lazy val root = (project in file("."))
+lazy val root = project.in(file("."))
+  .settings(commonSettings)
+  .settings(
+    publish / skip := true
+  )
   .aggregate(core, sample)
-
-def publishDestination(v: String) = {
-  val nexus = "https://oss.sonatype.org/"
-  if (v.trim.endsWith("SNAPSHOT")) Some("snapshots" at nexus + "content/repositories/snapshots")
-  else Some("releases" at nexus + "service/local/staging/deploy/maven2")
-}
-
-lazy val pom = {
-  <url>https://github.com/t2v/stackable-controller</url>
-    <licenses>
-      <license>
-        <name>Apache License, Version 2.0</name>
-        <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
-        <distribution>repo</distribution>
-      </license>
-    </licenses>
-    <scm>
-      <url>git@github.com:t2v/stackable-controller</url>
-      <connection>scm:git:git@github.com:t2v/stackable-controller</connection>
-    </scm>
-    <developers>
-      <developer>
-        <id>gakuzzzz</id>
-        <name>gakuzzzz</name>
-        <url>https://github.com/gakuzzzz</url>
-      </developer>
-    </developers>
-}
