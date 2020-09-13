@@ -54,7 +54,7 @@ lazy val core = project
   )
 
 lazy val sample = project
-  .enablePlugins(play.sbt.PlayScala)
+  .enablePlugins(PlayScala)
   .settings(commonSettings)
   .settings(
     publish / skip := true,
