@@ -172,7 +172,7 @@ As an alternative, this module offers Composable Action composition using the po
 Add a dependency declaration into your Build.scala or build.sbt file:
 
 ```scala
-libraryDependencies += "de.lolhens" %% "stackable-controller" % "0.6.0"
+libraryDependencies += "de.lolhens" %% "stackable-controller" % "0.7.0"
 ```
 
 - for Play2.2.x, use 0.3.0
