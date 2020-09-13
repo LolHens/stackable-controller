@@ -6,7 +6,7 @@ import models._
 import play.api.mvc._
 
 @Singleton
-class Application @Inject()(cc: ControllerComponents) extends AbstractController(cc) with DBSessionElement with LoggingElement {
+class Application @Inject()(components: ControllerComponents) extends AbstractController(components) with DBSessionElement with LoggingElement {
 
   def index = Action {
     Ok(views.html.index("Your new application is ready."))
