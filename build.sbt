@@ -3,13 +3,42 @@ lazy val commonSettings: Seq[Setting[_]] = Seq(
   version := "0.7.0-SNAPSHOT",
 
   scalaVersion := "2.13.3",
-  crossScalaVersions := Seq("2.12.12", scalaVersion.value)
-)
+  crossScalaVersions := Seq("2.12.12", scalaVersion.value),
 
-/*resolvers ++= Seq(
-  "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
-  "sonatype releases" at "http://oss.sonatype.org/content/repositories/releases"
-)*/
+  licenses += ("Apache-2.0", url("https://www.apache.org/licenses/LICENSE-2.0")),
+
+  homepage := Some(url("https://github.com/LolHens/stackable-controller")),
+  scmInfo := Some(
+    ScmInfo(
+      url("https://github.com/LolHens/stackable-controller"),
+      "scm:git@github.com:LolHens/stackable-controller.git"
+    )
+  ),
+  developers := List(
+    Developer(id = "LolHens", name = "Pierre Kisters", email = "pierrekisters@gmail.com", url = url("https://github.com/LolHens/"))
+  ),
+
+  Compile / doc / sources := Seq.empty,
+
+  version := {
+    val tagPrefix = "refs/tags/"
+    sys.env.get("CI_VERSION").filter(_.startsWith(tagPrefix)).map(_.drop(tagPrefix.length)).getOrElse(version.value)
+  },
+
+  publishMavenStyle := true,
+
+  publishTo := sonatypePublishToBundle.value,
+
+  credentials ++= (for {
+    username <- sys.env.get("SONATYPE_USERNAME")
+    password <- sys.env.get("SONATYPE_PASSWORD")
+  } yield Credentials(
+    "Sonatype Nexus Repository Manager",
+    "oss.sonatype.org",
+    username,
+    password
+  )).toList
+)
 
 lazy val core = project
   .settings(commonSettings)
@@ -35,7 +64,7 @@ lazy val sample = project
       guice,
       specs2 % "test",
       "com.typesafe.play" %% "play" % play.core.PlayVersion.current,
-      //"com.h2database" % "h2" % "1.4.196",
+      "com.h2database" % "h2" % "1.4.196",
       "org.scalikejdbc" %% "scalikejdbc" % "3.5.0",
       "org.scalikejdbc" %% "scalikejdbc-config" % "3.5.0",
       "org.scalikejdbc" %% "scalikejdbc-play-initializer" % "2.8.0-scalikejdbc-3.5",

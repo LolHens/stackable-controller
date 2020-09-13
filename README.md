@@ -1,5 +1,7 @@
 ## Play2 Stackable Action Composition
-[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/t2v/stackable-controller?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Release Notes](https://img.shields.io/github/release/LolHens/stackable-controller.svg?maxAge=3600)](https://github.com/LolHens/stackable-controller/releases/latest)
+[![Maven Central](https://img.shields.io/maven-central/v/de.lolhens/stackable-controller_2.13)](https://search.maven.org/artifact/de.lolhens/stackable-controller_2.13)
+[![Apache License 2.0](https://img.shields.io/github/license/LolHens/stackable-controller.svg?maxAge=3600)](https://www.apache.org/licenses/LICENSE-2.0)
 
 This module offers Action Composition Utilities to Play2.1, 2.2, 2.3, 2.4, 2.5 applications
 
@@ -170,7 +172,7 @@ As an alternative, this module offers Composable Action composition using the po
 Add a dependency declaration into your Build.scala or build.sbt file:
 
 ```scala
-libraryDependencies += "jp.t2v" %% "stackable-controller" % "0.6.0"
+libraryDependencies += "de.lolhens" %% "stackable-controller" % "0.6.0"
 ```
 
 - for Play2.2.x, use 0.3.0
