@@ -1,5 +1,6 @@
 package jp.t2v.lab.play2.stackc
 
+import javax.inject.Inject
 import play.api.mvc._
 
 import scala.collection.concurrent.TrieMap
@@ -7,12 +8,13 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.{ControlThrowable, NonFatal}
 import scala.util.{Failure, Success}
 
+@Inject
 trait StackableController {
-  self: BaseController =>
+  self: AbstractController =>
 
-  final class StackActionBuilder[B](val parser: BodyParser[B], params: Attribute[_]*) extends ActionBuilder[RequestWithAttributes, B] {
+  final class StackActionBuilder[B](override val parser: BodyParser[B], params: Attribute[_]*) extends ActionBuilder[RequestWithAttributes, B] {
 
-    def executionContext: ExecutionContext = defaultExecutionContext
+    override protected def executionContext: ExecutionContext = defaultExecutionContext
 
     def invokeBlock[A](req: Request[A], block: (RequestWithAttributes[A]) => Future[Result]): Future[Result] = {
       val request = new RequestWithAttributes(req, new TrieMap[RequestAttributeKey[_], Any] ++= params.map(_.toTuple))
